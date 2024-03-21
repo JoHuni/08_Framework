@@ -1,0 +1,213 @@
+API
+제공하는 코드에 지정된 방식으로만 접근함
+-> 다른 프로그램들이 데이터를 주고 받거나 기능을 호출하여 통신할 수 있음
+
+
+라이브러리
+코드를 그냥 통째로 줌,
+ 자주 사용 되는 기능을 모아둔 코드들의 집합
+-> 사용자가 받아서 아무렇게나 사용 가능
+
+프레임워크
+기본 구조와 뼈대를 제공하는 틀
+-> 이력서같이 제공해야하는 양식이 정해져있음
+
+Spring Framework의 주요 특징
+
+제어 반전
+IOC(Inversion of Control)
+객체의 생성부터 모든 생명주기의 관리까지 스프링이 직접 관리함
+
+의존성 주입
+DI(Dependency Injection)
+개발자가 직접 객체를 생성하지 않고
+스프링이 만들어준 객체를 필요할때 주입
+
+POJO(Plain Old Java Object)
+일반적인 자바 객체를 사용할 수 있도록 지원
+
+관점 지향 프로그래밍
+AOP(Aspect Oriented Programing)
+
+Spring MVC
+
+
+Spring Boot
+복잡한 환경 설정을 최소화해줌
+
+빌드(build)
+코드를 실행 가능한 상태로 만듦
+
+어플리케이션에 추가하셈
+#Spring Dev Tools(자동 리로드, 서버 재시작) 설정
+spring.devtools.livereload.enabled=true
+spring.devtools.restart.enabled=true
+spring.thymeleaf.cache=false
+
+Servlet : webapp/index.html(메인 페이지)
+SpringBood : templates/index.html
+
+많은 기능을 지원해주는 어노테이션이 많음
+@RequestMapping("주소")
+서블릿에서 했던 그 request 맞음
+종류는 GET, POST, DELETE, PUT이 있음
+
+@RequestMapping는 최상위 매핑 어노테이션이어서
+GET, SET, POST 뭐든 안가리고 다 잘함
+
+근데 요즘 메타가 GET, SET같이 구체적으로 매핑해주는게 좋음 -> 가독성이 좋아지고 의도대로 코드 작동시키기 위해서
+
+그리고 리턴할 때 접두사 접미사 빼고 써야됨
+원래 리턴 하려면 "classpath:/templates/index.html"
+이런 식으로 작성해야 하지만
+그냥 "index"만 리턴해도 됨
+
+@Controller
+위의 어노테이션을 사용하면 해당 클래스를 Bean(스프링에서 직접 생성하고 관리하는 객체)
+으로 지정하고 요청/응답 제어 역할을 명시한다.
+
+@Slf4j
+Lombok 제공하는 어노테이션으로
+주로 log를 이용한 메시지 출력에 사용
+
+값 얻어오는 법
+메서드의 파라미터에 HttpServletRequest req를 집어넣으면
+서블릿에서 했던 것처럼 req.getParameter로 가져오기도 됨
+그리고 redirect는 return에 작성하면 사용 가능
+	return "redirect:/param/main";
+ 이렇게
+
+또는
+메서드의 매개변수에 @RequestParam("title") String title 추가
+, 로 구분해서 여러개 얻어오기도 가능
+
+@RequestParam(value="publisher", required=false, defaultValue = "하이") String publisher
+-> 여기서 value는 K:V 할 때 value를 뜻함
+required가 true면 값이 비어있을 수 없음. 기본 값이 true인듯함
+false면 비어있을 수 있음. == null로 값이 넘어옴
+defalutValue는 말그대로 기본값
+아무 것도 작성 안하면 그냥 "하이" 넘어옴
+
+
+--------------------------------------------타임리프------------------------------------------------------
+
+스프링에도 EL이 있음
+
+${key} : 변수. Model 등을 이용해서 세팅한 값을 출력함
+
+th:text 속성="속성값"
+타임리프를 이용해서 속성 값을 태그 내용에 출력
+--> <p th:text="${asd}"> asdasd</p>
+이렇게 있으면 asd에 해당 되는 값이 있으면
+p태그 내부에 있던 asdasd는 사라지고 ${asd}속성 안의 값이 대입되어
+출력된 이후(해석 후) 소멸됨
+--> 특수문자는 해석하지 않음
+
+th:utext="속성값"
+얘는 특수문자를 해석함
+html태그도 해석함
+
+
+th:block
+쉽게 이해하자면 그냥 하나로 묶는다고 생각하면 됨
+html에서는 th태그를 묶어주는 태그가 없기 때문에
+타임리프에서 자체 제공하는 유일한 태그임
+반복문을 사용할 때 자주 사용함
+
+타임리프에도 forEach가 존재하는데,
+th:each 형식으로 사용됨
+th:each=" 변수명 : ${List or Array}"
+${} 안에 있는 애들  뺑뺑이 돌려서
+변수 안에다가 집어넣음
+변수명[0]으로 인덱스 째로 꺼낼 수도 있음
+
+그리고 객체에서 정보를 꺼내올 때
+${student.name} 이런 식으로 꺼내오는데
+이거 귀찮다고 생략하는 방법
+1. th:object="${std} 일단 오브젝트 가져오기
+2. th: *{name} 식별자만 에스터리스크로 바꿔주면 그냥 속성만 써주면 됨
+
+제출된 파라미터는
+param.~~로 꺼내올 수 있음
+서블릿 흐름에 따라서
+view에서 requset -> 
+해당 view를 처리하는 서블릿의 request 객체에 파라미터가 저장됨
+그냥 그거 가져다 쓰는 거임
+전달된 파라미터가 없으면 null이 넘어오고, 반복을 돌려도 배열/리스트가 존재하지 않으면
+반복 안돌림
+
+th:text, utext 대신 사용하는 것들이 있는디
+[[]] == text
+[()] == utext
+근데 잘 안씀
+
+.properties 값 출력하는 방법
+#{app.name}
+그냥 속성 작성하듯이 쓰쇼
+
+ PathVariable : 주소 중 일부분을 변수 값처럼 사용할 수 잇음
+-> 나중에 좀 더 자세히 정리
+
+th:if
+th:unless --> else임
+
+조건문들은 참일 때만 화면에 출력됨
+고로 작성이 되어있어도 조건에 맞지 않으면
+출력 자체가 되질 않음
+th:if=$"{}"와 같이 작성
+
+조건문이라고 하지만 비교연산자 없이 떡하니 값만 있어도
+작동 잘 함 --> 값만 써놓은 경우에는
+값의 유무에 따라서 T/F구별함
+NULL = F
+NOT NULL = T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
