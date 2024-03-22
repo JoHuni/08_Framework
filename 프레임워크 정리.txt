@@ -162,10 +162,14 @@ th:if=$"{}"와 같이 작성
 NULL = F
 NOT NULL = T
 
+Connection pool : Connection이 모여있는 곳
+-> Server 실행 시 DB와 연결된 Connection을 일정 개수 생성
+-> 클라이언트 요청 시마다 만들어진 Connection을 대여
+-> 요청이 처리가 완료되면 다시 Connection을 반납 받음
 
+* 생성/소멸(반환) 걸리는 시간이 현격히 감소
 
-
-
+* 대기열 + DB 연결 과부하 예방
 
 
 

@@ -118,4 +118,17 @@ public class ExampleController {
 		model.addAttribute("num", 200);
 		return "example/ex4";
 	}
+	
+	@GetMapping("ex5")
+	public String ex5(Model model) {
+		// Model : Spring에서 값 전달 역할을 하는 객체
+		//		   기본적으로 request scope로 지정 되어 있음
+		model.addAttribute("message", "타임리프 + Javascript 사용 연습");
+		model.addAttribute("num1", 1);
+		
+		Student std = new Student();
+		std.setSutdentNo("22222");
+		model.addAttribute("std", std);
+		return "example/ex5";
+	}
 }
