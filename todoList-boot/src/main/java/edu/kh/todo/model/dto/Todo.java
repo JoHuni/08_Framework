@@ -15,6 +15,12 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Todo {
 
+	public Todo(int todoNo, String todoTitle, String todoContent) {
+		this.todoNo = todoNo;
+		this.todoTitle = todoTitle;
+		this.todoContent = todoContent;
+		
+	}
 	private int 	todoNo;			// 할 일 번호
 	private String 	todoTitle;		// 할 일 제목
 	private String 	todoContent;	// 할 일 내용

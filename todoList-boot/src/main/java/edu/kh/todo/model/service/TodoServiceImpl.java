@@ -61,4 +61,38 @@ public class TodoServiceImpl implements TodoService{
 		
 		return mapper.addTodo(todo);
 	}
+	
+	@Override
+	public Todo todoDetail(int todoNo) {
+		return mapper.todoDetail(todoNo);
+	}
+	
+	@Override
+	public int todoDelete(int todoNo) {
+		return mapper.todoDelete(todoNo);
+	}
+	
+	@Override
+	public int todoUpdate(Todo todo) {
+		// 마이바티스 객체를 이용할 때
+		// SQL에 전다할 수 있는 객체는 오직 하나
+		// DTO, Map, List등으로 묶어서 전달
+		return mapper.todoUpdate(todo);
+	}
+	
+	@Override
+	public int todoCompleteUpdate(Todo todo) {
+		return mapper.todoCompleteUpdate(todo);
+	}
+
+	@Override
+	public int getTotalCount() {
+		return mapper.getTotalCount();
+	}
+	
+	@Override
+	public int getCompleteCount() {
+		return mapper.getCompleteCount();
+
+	}
 }
