@@ -1,10 +1,13 @@
 package edu.kh.todo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,5 +116,49 @@ public class AjaxController {
 			int result = service.addTodo(todo.getTodoTitle(), todo.getTodoContent());
 		
 		return result;
+	}
+	
+	@ResponseBody
+	@GetMapping("selectList")
+	public List<Todo> selectList() {
+		List<Todo> todoList = service.selectList();
+		
+		// List 타입은 Java의 타입으로
+		// JS에서 사용 할 수 없음
+		// -> JSON 변환(GSON 라이브러리 이용)
+
+		
+		return todoList;
+		
+		// List(Java 전용 타입)를 반환
+		// -> JS에서 인식할 수 없기 때문에
+		//    HttpMessageConverter가 JSON [{}, {}, {}](JSON Array) 형태로 변환
+	}
+	
+	@ResponseBody // 요청한 곳으로 데이터 돌려보냄
+	@GetMapping("detail")
+	public Todo selectTodo(@RequestParam("todoNo") int todoNo) {
+		// return 자료형은 : Todo
+		// -> HttpMessageConverter가 String(JSON)형태로 변환해서 반환
+		return service.todoDetail(todoNo);
+	}
+	
+	// Delete 방식 요청 처리(비동기 요청만 가능!!)
+	@ResponseBody
+	@DeleteMapping("delete")
+	public int deleteTodo(@RequestBody int todoNo) {
+		return service.todoDelete(todoNo);
+	}
+	
+	@ResponseBody
+	@PutMapping("changeComplete")
+	public int changeComplete(@RequestBody Todo todo) {
+		return service.updateComplete(todo);
+	}
+	
+	@ResponseBody
+	@PutMapping("update")
+	public int todoUpdate(@RequestBody Todo todo) {
+		return service.todoUpdate(todo);
 	}
 }
