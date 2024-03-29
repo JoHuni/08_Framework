@@ -172,9 +172,29 @@ Connection pool : Connection이 모여있는 곳
 * 대기열 + DB 연결 과부하 예방
 
 
+서버 시작
+-> 각종 설정 읽음
+(서버 기본 설정, 자동 설정, 사용자 설정(DBCP등))
++ ComponentScan(Bean 등록 구문)
+(@Component, @Controller, @Service, @Mapper)
+-> 클라이언트 요청 대기 상태
 
+-> 클라이언트 요청 -> DispatcherServlet
+-> Controller -> Service -> DAO, MAPPER 
 
+DispathverServlet
+1) forward -> ViewResolver(접두사 + 반환값 + 접미사)
+2) redirect -> 재요청한 Controller
+3) 비동기 요청 -> 요청한 JS 코드
 
+-> 클라이언트 응답
+
+자주 쓰는 어노테이션을 외워보자
+
+@Controller
+해당 클래스 컨트롤러임
+bean으로 등록, 요청/응답 제어 역할 명시함
+bean -> 객체를 스프링이 관리함
 
 
 
