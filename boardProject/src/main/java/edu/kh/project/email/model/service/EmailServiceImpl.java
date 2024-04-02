@@ -1,15 +1,22 @@
 package edu.kh.project.email.model.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import edu.kh.project.email.model.mapper.EmailMapper;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
+@Transactional // 예외 터지면 롤백할게(아님 커밋)
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService{
@@ -20,9 +27,11 @@ public class EmailServiceImpl implements EmailService{
 	// 타임리프(템플릿 엔진)을 이용해서 HTML 코드 -> 자바 코드로 변환
 	private final SpringTemplateEngine templateEngine;
 	
+	private final EmailMapper mapper;
+
 	// 이메일 보내기
 	public String sendEmail(String htmlName, String email) {
-		
+
 		// 6자리 난수(인증 코드) 생성
 		String authKey = createAuthKey();
 		try {
@@ -67,6 +76,27 @@ public class EmailServiceImpl implements EmailService{
 			e.printStackTrace();
 			return null;
 		}
+		
+		// 이메일 + 인증 번호를 "TB_AUTH_KEY" 테이블 저장
+		Map<String, String> map = new HashMap<>();
+		map.put("authKey", authKey);
+		map.put("email", email);
+		
+		// 1) 해당 이메일이 DB에 존재하는 경우가 있을 수 있기 때문에
+		//	  수정(update)을 먼저 진행
+		//	  -> 1 반환 == 업데이트 성공 == 이미 있던 인증번호 변경
+		//	  -> 0 반환 == 업데이트 실패 == 이메일 존재 X
+		int result = mapper.updateAuthKey(map);
+		
+		// 2) 1번 update 실패 시 insert 시도
+		if(result == 0) {
+			result = mapper.insertAuthKey(map);
+		}
+		
+		if(result == 0) {
+			return null;
+		}
+		
 		return authKey; // 오류 없이 전송 되면 authKey 반환
 	}
 	
@@ -113,7 +143,12 @@ public class EmailServiceImpl implements EmailService{
         }
         return key;
     }
-	
+    
+    // 이메일, 인증번호 확인
+	@Override
+	public int checkAuthKey(Map<String, Object> map) {
+		return mapper.checkAuthKey(map);
+	}
 }
 
 /* Google SMTP를 이용한 이메일 전송하기

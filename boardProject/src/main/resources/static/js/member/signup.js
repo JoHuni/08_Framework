@@ -58,7 +58,12 @@ function execDaumPostcode() {
   
   // 2) 이메일이 입력(input 이벤트) 될 때 마다 유효성 검사 수행
   memberEmail.addEventListener("input", e => {
-  
+    // 이메일 인증 후 이메일이 변경된 경우
+    checkObj.authKey = false;
+    // document.querySelector("#authKeyMessage").innerText = "";
+
+
+
     // 작성된 이메일 값 얻어오기
     const inputEmail = e.target.value; 
   
@@ -292,6 +297,8 @@ const sendAuthKeyBtn = document.querySelector("#sendAuthKeyBtn");
 const authKey = document.querySelector("#authKey");
 const authKeyMessage = document.querySelector("#authKeyMessage");
 
+const checkAuthKeyBtn = document.querySelector("#checkAuthKeyBtn");
+
 let authTimer; // 타이머 역할을 할 setInterval을 저장할 변수
 
 const initMin = 4; // 타이머 초기 값(분)
@@ -304,7 +311,9 @@ let ser = initSec;
 
 // 인증번호 받기 버튼 클릭 시
 sendAuthKeyBtn.addEventListener("click", () => {
-
+    checkObj.authKey = false;
+    document.querySelector("#authKeyMessage").innerText = ""
+    
     // 중복되지 않은 유효한 이메일을 입력한 경우가 아니라면
     if(!checkObj.memberEmail){
         alert('유효한 이메일 작성 후 클릭해주세요.');
@@ -344,6 +353,9 @@ sendAuthKeyBtn.addEventListener("click", () => {
     authKeyMessage.innerHTML = initTime; // 05:00 세팅
 
     authKeyMessage.classList.remove('confirm', 'error'); // 검정 글씨
+
+    alert("인증번호가 발송되었습니다.");
+
     // setInterval(함수, 지연시간(ms))
     // - 지연시간(ms)만큼 시간이 지날 때마다 함수 수행
     
@@ -395,6 +407,9 @@ signupForm.addEventListener("submit", e => {
                 case "memberEmail":
                     str = "이메일이 유효하지 않습니다";
                     break;
+                case "authKey":
+                    str = "이메일이 인증되지 않았습니다"
+                    break;
                 case "memberPw":
                     str = "비밀번호가 유효하지 않습니다";
                     break;
@@ -407,7 +422,6 @@ signupForm.addEventListener("submit", e => {
                 case "memberTel":
                     str = "전화번호가 유효하지 않습니다";
                     break;
-                
             }
             alert(str);
 
@@ -420,4 +434,54 @@ signupForm.addEventListener("submit", e => {
 
 
 // ---------------------------------
+
+
+// 인증하기 버튼 클릭 시
+// 입력된 인증 번호를 비동기로 서버에 전달
+// -> 입력된 인증 번호와 발급된 인증 번호가 같은지 비교
+//    -> 같으면 1, 아니면 0 반환
+// 단, 타이머 00:00초가 아닐 경우에만 수행
+checkAuthKeyBtn.addEventListener("click", () => {
+  if(min === 0 && sec === 0){
+    alert("인증번호 입력 제한 시간을 초과하였습니다.");
+    checkObj.authKey = false;
+    return;
+  }
+
+  if(authKey.value.length < 6){ // 인증번호가 제대로 입력 되지 않은 경우
+    alert("인증번호가 올바르지 않습니다.");
+    authKeyMessage.innerText = "";
+    authKeyMessage.classList.remove("error", "confirm");
+    checkObj.authKey = false;
+    return;
+  }
+
+  const obj = {
+    "email" : memberEmail.value,
+    "authKey" : authKey.value
+  }
+  fetch("/email/checkAuthKey", {
+    method : "POST",
+    headers : {"Content-Type" : "application/json"},
+    body : JSON.stringify(obj) // obj를 JSON 변경
+  })
+  .then(resp => resp.text())
+  .then(result => {
+    if(result == 0){
+      alert("인증번호가 일치하지 않습니다.");
+      checkObj.authKey = false;
+      console.log(result);
+      return;
+    }
+
+    clearInterval(authTimer);
+    
+    authKeyMessage.innerText = "인증되었습니다.";
+    authKeyMessage.classList.remove("error");
+    authKeyMessage.classList.add("confirm");
+    checkObj.authKey = true;
+    console.log(result)
+
+  })
+})
 
