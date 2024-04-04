@@ -26,4 +26,10 @@ public interface MyPageMapper {
 	 */
 	int changePassword(Member inputMember);
 
+	/** 회원 탈퇴
+	 * @param memberNo
+	 * @return
+	 */
+	int userWithdrawal(int memberNo);
+
 }

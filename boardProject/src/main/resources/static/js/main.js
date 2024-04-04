@@ -119,3 +119,88 @@ selectMemberList.addEventListener("click", () => {
     //    tbody에 들어갈 요소를 만들고 값 세팅 후 추가
 
 })
+
+const resetMemberNo = document.querySelector("#resetMemberNo");
+const resetPw = document.querySelector("#resetPw");
+
+// 입력 받은 회원 번호 얻어오기
+
+
+resetPw.addEventListener("click", () => {
+
+    const inputNo = resetMemberNo.value;
+
+    if(inputNo.trim().length == 0) {
+        alert("회원 번호를 입력해주세요.");
+        return;
+    }
+    fetch("/resetPw", {
+        method : "PUT", // 수정 용도 요청 방식
+        headers : {"Content-Type" : "application/json"},
+        body : inputNo
+    })
+    .then(resp => resp.text())
+    .then(result => {
+        // result == 컨트롤러로부터 반환 받아 Text로 파싱한 값
+        if(result > 0){
+            alert("비밀번호가 초기화 되었습니다.");
+        }
+        else{
+            alert("해당 회원이 존재하지 않습니다.");
+        }
+    })
+});
+
+const restoreMemberNo = document.querySelector("#restoreMemberNo");
+const restoreBtn = document.querySelector("#restoreBtn");
+
+restoreBtn.addEventListener("click", () => {
+    const memNo = restoreMemberNo.value;
+
+    if(memNo.trim().length == 0){
+        alert('회원 번호를 입력해주세요.');
+        return;
+    }
+
+    fetch("/restoreMember", {
+        method : "PUT",
+        headers : {"Content-Type" : "application/json"},
+        body : memNo
+    })
+    .then(resp => resp.text())
+    .then(result => {
+        if(result > 0){
+            alert('탈퇴 처리가 취소되었습니다.');
+        }
+        else{
+            alert('해당 회원이 존재하지 않거나 탈퇴하지 않은 회원입니다.');
+        }
+    })
+});
+
+const deleteMember = document.querySelector("#deleteMember");
+const deleteBtn = document.querySelector("#deleteBtn");
+
+deleteBtn.addEventListener("click", () => {
+    const input = deleteMember.value;
+
+    if(input.trim().length == 0){
+        alert('회원 번호를 입력해주세요.');
+        return;
+    }
+
+    fetch("/deleteMember", {
+        method : "PUT",
+        headers : {"Content-Type" : "application/json"},
+        body : input
+    })
+    .then(resp => resp.text())
+    .then(result => {
+        if(result > 0){
+            alert('삭제되었습니다.');
+        }
+        else{
+            alert('해당 회원이 존재하지 않습니다.');
+        }
+    })
+});

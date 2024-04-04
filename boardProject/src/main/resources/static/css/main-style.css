@@ -429,3 +429,7 @@ label[for="headerMenuToggle"]:hover{
   background-color: var(--main-color);
 }
 
+.content-1 hr{
+  margin: 20px 0;
+}
+

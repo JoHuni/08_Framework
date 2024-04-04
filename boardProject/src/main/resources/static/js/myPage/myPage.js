@@ -59,35 +59,128 @@ if(updateInfo != null){
         }
     })
 }
+  /* 비밀번호 수정 */
+  
+  const changePw = document.querySelector("#changePw");
 
+  if(changePw != null){
+    changePw.addEventListener("submit", e => {
+      const currentPw = document.querySelector("#currentPw");
+      const newPw = document.querySelector("#newPw");
+      const newPwConfirm = document.querySelector("#newPwConfirm");
 
-/* 다음 주소 API 활용 */
-function execDaumPostcode() {
-    new daum.Postcode({
-      oncomplete: function (data) {
-        // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
-  
-        // 각 주소의 노출 규칙에 따라 주소를 조합한다.
-        // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-        var addr = ''; // 주소 변수
-       
-  
-        //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
-          addr = data.roadAddress;
-        } else { // 사용자가 지번 주소를 선택했을 경우(J)
-          addr = data.jibunAddress;
-        }
-  
-        // 우편번호와 주소 정보를 해당 필드에 넣는다.
-        document.getElementById('postcode').value = data.zonecode;
-        document.getElementById("address").value = addr;
-        // 커서를 상세주소 필드로 이동한다.
-        document.getElementById("detailAddress").focus();
+      let str; // undefined
+
+      if(currentPw.value.trim().length == 0){
+        str = "현재 비밀번호를 입력해주세요.";
       }
-    }).open();
-  }
-  
-  
-  /* 주소 검색 버튼 클릭 시 */
-  document.querySelector("#searchAddress").addEventListener("click", execDaumPostcode);
+      else if(newPw.value.trim().length == 0){
+        str = "새 비밀번호를 입력해주세요.";
+      }
+      else if(newPwConfirm.value.trim().length == 0){
+        str = "새 비밀번호 확인 입력해주세요.";
+      }
+      if(str != undefined){
+        alert(str);
+        e.preventDefault();
+        return;
+      }
+    
+    //- 새 비밀번호 정규식
+    const regExp = /^[a-zA-Z0-9!@#_-]{6,20}$/;
+
+    if( !regExp.test(newPw.value) ){ // 새 비밀번호 정규식 통과 X
+      alert("새 비밀번호가 유효하지 않습니다.");
+      e.preventDefault();
+      return;
+    }
+
+    //- 새 비밀번호 == 새 비밀번호 확인
+    if( newPw.value != newPwConfirm.value){
+      alert("새 비밀번호가 일치하지 않습니다");
+      e.preventDefault();
+      return;
+    }
+  })
+}
+
+// -----------------------------------------------------------
+/* 탈퇴 유효성 검사 */
+
+// 탈퇴 form 태그
+const secession = document.querySelector("#secession");
+
+if(secession != null){
+
+  secession.addEventListener("submit", e => {
+
+    const memberPw = document.querySelector("#memberPw");
+    const agree = document.querySelector("#agree");
+
+    // - 비밀번호 입력 되었는지 확인
+    if(memberPw.value.trim().length == 0){
+      alert("비밀번호를 입력해 주세요");
+      e.preventDefault();
+      return;
+    }
+
+    // - 약관 동의 체크 확인
+    
+    // checkbox 또는 radio  checked 속성
+    // - checked  ->  체크시 true, 미체크시 false 반환
+    // - checked = true -> 체크하기
+    // - checked = false -> 체크 해제하기
+
+    // if( agree.checked == false ){
+    if( !agree.checked ){ // 체크 안됐을 때
+      alert("약관에 동의해주세요");
+      e.preventDefault();
+      return;
+    }
+
+    // - 정말 탈퇴? 물어보기
+    if( !confirm("정말 탈퇴 하시겠습니까?") ){
+      alert('취소되었습니다.');
+      e.preventDefault();
+      return;
+    }
+    else{
+      return;
+    }
+
+
+  })
+}
+
+
+
+// /* 다음 주소 API 활용 */
+// function execDaumPostcode() {
+//   new daum.Postcode({
+//     oncomplete: function (data) {
+//       // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+//       // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+//       // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+//       var addr = ''; // 주소 변수
+     
+
+//       //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+//       if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+//         addr = data.roadAddress;
+//       } else { // 사용자가 지번 주소를 선택했을 경우(J)
+//         addr = data.jibunAddress;
+//       }
+
+//       // 우편번호와 주소 정보를 해당 필드에 넣는다.
+//       document.getElementById('postcode').value = data.zonecode;
+//       document.getElementById("address").value = addr;
+//       // 커서를 상세주소 필드로 이동한다.
+//       document.getElementById("detailAddress").focus();
+//     }
+//   }).open();
+// }
+
+
+// /* 주소 검색 버튼 클릭 시 */
+// document.querySelector("#searchAddress").addEventListener("click", execDaumPostcode);
