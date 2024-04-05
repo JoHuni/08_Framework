@@ -1,5 +1,7 @@
 package edu.kh.project.member.model.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,8 +9,10 @@ import lombok.ToString;
 
 @Getter	// Spring EL, MyBatis
 @Setter // 커맨드 객체
-@NoArgsConstructor
 @ToString
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Member {
 	
    private int 		memberNo;
