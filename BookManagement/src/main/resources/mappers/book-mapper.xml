@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jhh.book.Book.model.mapper.BookMapper">
+	<select id="showBook" resultType="Book">
+		SELECT "BOOK_NO", "BOOK_TITLE", "BOOK_WRITER", "BOOK_PRICE", TO_CHAR(REG_DATE, 'YYYY-MM-DD') REG_DATE
+		FROM "BOOK"
+	</select>
+	
+	<insert id="insertBook">
+		INSERT INTO "BOOK" VALUES
+		(SEQ_BOOK_NO.NEXTVAL, #{bookTitle}, #{bookWriter}, #{bookPrice}, SYSDATE)
+	</insert>
+	
+	<select id="searchBook" resultType="Book">
+		SELECT "BOOK_NO", "BOOK_TITLE", "BOOK_WRITER", "BOOK_PRICE", TO_CHAR(REG_DATE, 'YYYY-MM-DD') REG_DATE
+		FROM "BOOK"
+		WHERE "BOOK_TITLE" LIKE '%${searchInput}%'
+	</select>
+	
+	<delete id="deleteBook">
+		DELETE FROM "BOOK"
+		WHERE BOOK_NO = #{bookNo}
+	</delete>
+	
+	<update id="updatePrice">
+		UPDATE "BOOK"
+		SET "BOOK_PRICE" = #{bookPrice}
+		WHERE BOOK_NO = #{bookNo}
+	</update>
+</mapper>

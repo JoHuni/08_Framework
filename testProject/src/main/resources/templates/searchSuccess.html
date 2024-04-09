@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>회원 정보</h1>
+    <br><br>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>회원 번호</th>
+                <th>회원 아이디</th>
+                <th>회원 이름</th>
+                <th>회원 나이</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="user : ${user}">
+                <th th:text="${user.userNo}"></th>
+                <th th:text="${user.userId}"></th>
+                <th th:text="${user.userName}"></th>
+                <th th:text="${user.userAge}"></th>
+
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

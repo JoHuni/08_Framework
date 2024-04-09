@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<form action="/book/insertBook" method="POST">
+        <h1>책 등록</h1>
+        <br><br><br>
+        제목 : <input type="text" name="bookTitle"> <br> <br>
+        글쓴이 : <input type="text" name="bookWriter"> <br><br>
+        가격 : <input type="number" name="bookPrice"> <br><br>
+        <br>
+        <button id="insertBtn">등록하기</button>
+</form>
+<script th:inline="javascript">
+    const message =  /*[[${message}]]*/ "전달 받은 message";
+  
+    if(message != null) alert(message);
+</script>
+</body>
+</html>

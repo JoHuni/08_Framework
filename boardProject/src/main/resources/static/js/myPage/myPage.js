@@ -357,7 +357,7 @@ if(profile != null){
     //   -> input에 저장된 파일 정보가 모두 사라짐 == 데이터 삭제
     imageInput.value = '';
 
-    backupInput.value = ''; // 백업본도 삭제
+    backupInput = undefined; // 백업본도 삭제
 
     // 삭제 상태임을 기록
     statusCheck = 0;
