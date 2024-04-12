@@ -34,7 +34,7 @@ searchBtn.addEventListener("click", () => {
             alterButtonTd.append(alterButton);
             tr.append(alterButtonTd);
             
-            alterButton.addEventListener("click", () => {
+            alterButton.addEventListener("click", e => {
                 const bookNo = bookList2.bookNo;
                 let bookPrice = prompt("수정할 가격 입력");
 
@@ -58,7 +58,7 @@ searchBtn.addEventListener("click", () => {
                     .then(result => {
                         if(result > 0 ){
                             alert("수정되었습니다.");
-                            location.reload(true);
+                            location.reload();
                         }
                         else{
                             console.log(result)
