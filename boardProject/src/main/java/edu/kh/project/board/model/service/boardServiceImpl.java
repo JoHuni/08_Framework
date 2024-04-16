@@ -1,4 +1,4 @@
-package edu.kh.project.board.service;
+package edu.kh.project.board.model.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.kh.project.board.mapper.BoardMapper;
 import edu.kh.project.board.model.dto.Board;
 import edu.kh.project.board.model.dto.Pagination;
+import edu.kh.project.board.model.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -77,5 +77,42 @@ public class boardServiceImpl implements BoardService{
 		// 	   Mapper 메서드 1회 호출로 여러 SELECT 한 번에 수행 가능
 		
 		return mapper.selectOne(map);
+	}
+	
+	@Override
+	public int boardLike(Map<String, Integer> map) {
+		// 1. 좋아요가 체크된 상태인 경우 (likeCheck == 1)
+		// ->  BOARD_LIKE 테이블에 DELETE
+		
+		// 2. 좋아요가 해제된 상태인 경우 (likeCheck == 0)
+		// ->  BOARD_LIKE 테이블에 INSERT
+		int result = 0;
+		if(map.get("likeCheck") == 1) {
+			result = mapper.deleteBoardLike(map);
+		}
+		else{
+			result = mapper.insertBoardLike(map);
+		}
+		
+		// 3. 다시 해당 게시글에 좋아요 개수 조회해서 반환
+		if(result > 0) {
+			return mapper.selectLikeCount(map.get("boardNo"));
+		}
+		
+		return -1;
+	}
+	
+	// 조회 수 증가
+	@Override
+	public int updateReadCount(int boardNo) {
+		// 1. 조회 수 1 증가
+		int result = mapper.updateReadCount(boardNo);
+		
+		// 2. 현재 조회 수를 조회
+		if(result > 0) {
+			return mapper.selectReadCount(boardNo);
+		}
+		// 실패한 경우 -1
+		return -1;
 	}
 }

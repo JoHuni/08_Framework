@@ -1,4 +1,4 @@
-package edu.kh.project.board.mapper;
+package edu.kh.project.board.model.mapper;
 
 import java.util.List;
 import java.util.Map;
@@ -26,5 +26,39 @@ public interface BoardMapper {
 	 */
 	List<Board> selectBoardList(int boardCode, RowBounds bounds);
 
+	/** 게시글 상세 조회
+	 * @param map
+	 * @return
+	 */
 	Board selectOne(Map<String, Integer> map);
+
+	/** 좋아요 해제
+	 * @param map
+	 * @return
+	 */
+	int deleteBoardLike(Map<String, Integer> map);
+
+	/** 좋아요 체크
+	 * @param map
+	 * @return
+	 */
+	int insertBoardLike(Map<String, Integer> map);
+
+	/** 좋아요 수
+	 * @param temp
+	 * @return count
+	 */
+	int selectLikeCount(int temp);
+
+	/** 조회 수 조회
+	 * @param boardNo
+	 * @return
+	 */
+	int selectReadCount(int boardNo);
+
+	/** 조회 수 증가
+	 * @param boardNo
+	 * @return
+	 */
+	int updateReadCount(int boardNo);
 }

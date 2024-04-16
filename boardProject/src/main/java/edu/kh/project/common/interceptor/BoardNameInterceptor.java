@@ -29,18 +29,23 @@ public class BoardNameInterceptor implements HandlerInterceptor{
 		String uri = request.getRequestURI();
 //		log.debug("uri : " + uri);
 		
-		int boardCode = Integer.parseInt(uri.split("/")[2]);
-		
-		// boardTypeList에서 boardCode를 하나씩 꺼내어 비교
-		for(Map<String, Object> boardType : boardTypeList) {
-			int temp = Integer.parseInt(String.valueOf((boardType.get("boardCode"))));
+		try {
+			int boardCode = Integer.parseInt(uri.split("/")[2]);
 			
-			// 비교 결과가 같으면
-			// request scope에 boardName을 추가
-			if(temp == boardCode) {
-				request.setAttribute("boardName", boardType.get("boardName"));
-				break;
+			// boardTypeList에서 boardCode를 하나씩 꺼내어 비교
+			for(Map<String, Object> boardType : boardTypeList) {
+				int temp = Integer.parseInt(String.valueOf((boardType.get("boardCode"))));
+				
+				// 비교 결과가 같으면
+				// request scope에 boardName을 추가
+				if(temp == boardCode) {
+					request.setAttribute("boardName", boardType.get("boardName"));
+					break;
+				}
 			}
+		}
+		catch(Exception e) {
+
 		}
 		
 		HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
