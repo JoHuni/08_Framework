@@ -148,3 +148,7 @@
     color: red;
     cursor: pointer;
 }
+
+form{
+    display: inline-block;
+}

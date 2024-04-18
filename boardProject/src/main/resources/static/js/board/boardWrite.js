@@ -123,9 +123,16 @@ boardWriteFrm.addEventListener("submit", e => {
         return;
     }
     if(boardContent.value.trim().length == 0){
-        alert('제목을 작성해주세요.');
+        alert('내용을 작성해주세요.');
         boardContent.focus();
         e.preventDefault();
         return;
     }
-})
+    // input 태그에 삭제할 이미지 순서(Set)을 배열로 만든 후 대입
+    // -> value(문자열) 저장 시 배열은 toString() 호출 되서 양쪽 []가 사라짐
+    document.querySelector("[name='deleteOrder']").value
+        = Array.from(deleteOrder);
+
+    document.querySelector("[name='querystring']").value = location.search;
+
+});

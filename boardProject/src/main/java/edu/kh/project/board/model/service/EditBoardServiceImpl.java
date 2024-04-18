@@ -3,7 +3,9 @@ package edu.kh.project.board.model.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -11,16 +13,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import edu.kh.project.board.model.BoardInsertException;
 import edu.kh.project.board.model.dto.Board;
 import edu.kh.project.board.model.dto.BoardImg;
+import edu.kh.project.board.model.exception.BoardInsertException;
+import edu.kh.project.board.model.exception.ImageDeleteException;
+import edu.kh.project.board.model.exception.ImageUpdateException;
 import edu.kh.project.board.model.mapper.EditBoardMapper;
 import edu.kh.project.common.util.Utility;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 @PropertySource("classpath:/config.properties")
 public class EditBoardServiceImpl implements EditBoardService{
 
@@ -153,6 +157,96 @@ public class EditBoardServiceImpl implements EditBoardService{
 		board.setBoardNo(boardNo);
 		
 		return mapper.boardDelete(board);
+	}
+	
+	@Override
+	public int boardUpdate(Board inputBoard, List<MultipartFile> images, String deleteOrder) throws IllegalStateException, IOException {
+		// 1. 게시글 부분 수정(제목, 내용)
+		int result = mapper.boardUpdate(inputBoard);
+		
+		if(result == 0) {
+			return 0;
+		}
+		
+		// 2. 기존 0 -> 삭제된 이미지(deleteOrder 이용)가 있는 경우
+		if(deleteOrder != null && !deleteOrder.equals("")) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("deleteOrder", deleteOrder);
+			map.put("boardNo", inputBoard.getBoardNo());
+			
+			result = mapper.deleteImage(map);
+			
+			// 하나라도 실패하면 롤백
+			if(result == 0) {
+				throw new ImageDeleteException();
+			}
+		}
+		
+		// 3. 선택한 파일이 존재할 경우 해당 파일 정보만 모아두는 List를 생성
+		// 실제 업로드된 이미지의 정보를 모아둘 List 생성
+		List<BoardImg> uploadList = new ArrayList<>();
+		
+		
+		// images 리스트에서 하나씩 꺼내어 선택된 파일이 있는지 검사
+		for(int i=0 ; i < images.size() ; i++) {
+			
+			// 실제 선택된 파일이 존재하는 경우
+			if( !images.get(i).isEmpty()  ) {
+				
+				// IMG_PATH  == webPath
+				// BOARD_NO  == boardNo
+				// IMG_ORDER == i (인덱스 == 순서)
+				
+				// 원본명
+				String originalName = images.get(i).getOriginalFilename();
+				
+				// 변경명
+				String rename = Utility.fileRename(originalName);
+				
+				// 모든 값을 저장한 DTO 생성 (Builder 패턴 사용)
+				BoardImg img = BoardImg.builder()
+								.imgOriginalName(originalName)
+								.imgRename(rename)
+								.imgPath(webPath)
+								.boardNo(inputBoard.getBoardNo())
+								.imgOrder(i)
+								.uploadFile(images.get(i))
+								.build();
+				
+				uploadList.add(img);
+				
+				// 4. 업로드 하려는 이미지 정보(img)를 이용해
+				// 수정 또는 삽입 수행
+				result = mapper.updateImage(img);
+				
+				if(result == 0) {
+					// 수정 실패 == 기존 해당 순서(IMG_ORDER)에 이미지가 없었다.
+					// -> 삽입 수행
+					result = mapper.insertImage(img);
+				}
+			}
+			// 수정 또는 삭제가 실패한 경우
+			if(result == 0) {
+				throw new ImageUpdateException();
+			}
+		}
+		// 선택한 파일이 없을 경우
+		if(uploadList.isEmpty()) {
+			return result;
+		}
+		
+		
+			
+			// 서버에 파일 저장
+			
+			for(BoardImg img : uploadList) {
+				img.getUploadFile()
+					.transferTo(new File(folderPath + img.getImgRename()));
+			}
+			
+		
+		
+		return result;
 	}
 	
 }
